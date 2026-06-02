@@ -208,6 +208,7 @@
       display: grid;
       place-items: center;
       padding-top: 72px;
+      transition: transform 1400ms ease;
     }
 
     /* das warme Licht / die Sonne — der namenlose Begleiter */
@@ -360,6 +361,48 @@
       50% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.9; }
     }
 
+    /* mode:'space' — der Raum darf wieder weit werden („Die laute Stimme") */
+    .scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(circle at 50% 50%, transparent 38%, rgba(255, 255, 255, 0.52) 100%);
+      transition: opacity 1400ms ease;
+    }
+
+    .mode-space .scene::after {
+      opacity: 0.32;
+      animation: roomOpen 8s ease-in-out infinite;
+    }
+
+    .mode-space .world {
+      animation: roomBreathe 8s ease-in-out infinite;
+    }
+
+    /* beim langsamen Atmen (Halten) bleibt der Raum ruhig weit und hell */
+    .mode-space .scene.holding::after {
+      opacity: 0.7;
+      animation: none;
+    }
+
+    .mode-space .scene.holding .world {
+      transform: scale(0.93);
+      animation: none;
+    }
+
+    @keyframes roomOpen {
+      0%, 100% { opacity: 0.22; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes roomBreathe {
+      0%, 100% { transform: scale(0.985); }
+      50% { transform: scale(0.965); }
+    }
+
     .gesture-pad {
       position: absolute;
       z-index: 8;
@@ -418,13 +461,11 @@
     }
 
     .page-dots {
-      position: absolute;
-      z-index: 10;
-      left: 50%;
-      bottom: 84px;
-      transform: translateX(-50%);
       display: flex;
+      flex: 1;
       gap: 6px;
+      justify-content: center;
+      align-items: center;
     }
 
     .dot {
@@ -460,7 +501,7 @@
     .holding .hold-words { opacity: 1; }
 
     @media (prefers-reduced-motion: reduce) {
-      .cloud, .sun, .tree-crown, .star, .light-orb { animation: none !important; }
+      .cloud, .sun, .tree-crown, .star, .light-orb, .world, .scene::after { animation: none !important; }
     }
 
     @media (max-height: 700px) {
@@ -482,8 +523,6 @@
         bottom: 112px;
         min-height: 66px;
       }
-
-      .page-dots { bottom: 73px; }
     }
 
     @media (min-width: 760px) {
@@ -515,6 +554,7 @@
     <section class="page" aria-label="Der Baum, der wachsen darf — interaktives Buch">
       <header class="topbar">
         <div class="brand">Selbstwert</div>
+        <div class="page-dots" id="dots" aria-hidden="true"></div>
         <div class="counter" id="counter">1 / 7</div>
       </header>
 
@@ -542,8 +582,6 @@
           <span class="voice-icon" aria-hidden="true"></span>
           <span id="voiceText">Das Licht sagt: Du musst nicht größer werden, um zu zählen. Du darfst hier sein – einfach weil du hier bist.</span>
         </aside>
-
-        <div class="page-dots" id="dots" aria-hidden="true"></div>
       </div>
 
       <footer class="bottom">
